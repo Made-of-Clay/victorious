@@ -1,57 +1,34 @@
 <template>
     <v-app>
+        <img :src="crown" alt="" class="app__bgCrown" />
         <v-app-bar
-            app
+            app dark
             color="primary"
-            dark
+            :hide-on-scroll="$vuetify.breakpoint.xsOnly"
         >
-        <div class="d-flex align-center">
-            <v-img
-                alt="Vuetify Logo"
-                class="shrink mr-2"
-                contain
-                src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-                transition="scale-transition"
-                width="40"
-            />
-
-            <v-img
-                alt="Vuetify Name"
-                class="shrink mt-1 hidden-sm-and-down"
-                contain
-                min-width="100"
-                src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-                width="100"
-            />
-        </div>
-
-        <v-spacer></v-spacer>
-
-        <v-btn
-            href="https://github.com/vuetifyjs/vuetify/releases/latest"
-            target="_blank"
-            text
-        >
-            <span class="mr-2">Latest Release</span>
-            <v-icon>mdi-open-in-new</v-icon>
-        </v-btn>
+            <AppNav component="v-tabs" />
         </v-app-bar>
 
-        <v-content>
+        <v-content :class="$vuetify.breakpoint.xsOnly ? 'pb-6' : ''">
             <pre v-html="$store.state.victories" />
             <HelloWorld/>
         </v-content>
+
+        <AppNav v-if="showBottomNav" component="v-bottom-navigation" />
     </v-app>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld';
+import AppNav from './components/AppNav';
+import crown from './assets/crown.svg';
 
 export default {
     name: 'App',
 
     components: {
         HelloWorld,
+        AppNav,
     },
 
     inject: [
@@ -59,8 +36,11 @@ export default {
     ],
 
     data: () => ({
-        //
+        crown,
     }),
+    computed: {
+        showBottomNav: vm => vm.$vuetify.breakpoint.xsOnly,
+    },
 
     mounted() {
         this.getVictories();
@@ -75,3 +55,13 @@ export default {
     },
 };
 </script>
+
+<style>
+.app__bgCrown {
+    filter: grayscale(1);
+    opacity: 0.2;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+</style>
