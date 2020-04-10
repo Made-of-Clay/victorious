@@ -61,8 +61,7 @@
 
 <script>
 import VictoryForm from './VictoryForm';
-
-const twoDigits = number => String(number).padStart(2, '0');
+import twoDigits from '../twoDigits';
 
 export default {
     components: {
