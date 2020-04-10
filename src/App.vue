@@ -11,7 +11,6 @@
 
         <v-content :class="$vuetify.breakpoint.xsOnly ? 'pb-6' : ''">
             <pre v-html="$store.state.victories" />
-            <HelloWorld/>
         </v-content>
 
         <AppNav v-if="showBottomNav" component="v-bottom-navigation" />
@@ -19,7 +18,6 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
 import AppNav from './components/AppNav';
 import crown from './assets/crown.svg';
 
@@ -27,7 +25,6 @@ export default {
     name: 'App',
 
     components: {
-        HelloWorld,
         AppNav,
     },
 
