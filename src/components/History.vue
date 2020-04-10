@@ -1,12 +1,29 @@
 <template>
-    <v-container tag="article">
+    <v-container tag="article" style="position:relative">
         <h1 :class="isSmallScreen ? '' : 'text-center'">History of Victory</h1>
 
         <v-timeline :dense="isSmallScreen">
+            <v-timeline-item>
+                <template v-slot:icon>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{on}">
+                            <v-btn
+                                fab
+                                color="primary"
+                                @click.stop="formShowing = true"
+                                v-on="on"
+                            >
+                                <v-icon>mdi-plus</v-icon>
+                            </v-btn>
+                        </template>
+                        Add Victory&hellip;
+                    </v-tooltip>
+                </template>
+            </v-timeline-item>
             <v-timeline-item
                 v-for="v in $store.state.victories"
                 :key="v.id"
-                color="accent"
+                color="secondary"
                 small
             >
                 <template v-slot:opposite>
@@ -37,13 +54,21 @@
                 </v-card>
             </v-timeline-item>
         </v-timeline>
+
+        <VictoryForm :showing.sync="formShowing" />
     </v-container>
 </template>
 
 <script>
+import VictoryForm from './VictoryForm';
+
 const twoDigits = number => String(number).padStart(2, '0');
 
 export default {
+    components: {
+        VictoryForm,
+    },
+
     filters: {
         formatDate: milliseconds => {
             const d = new Date(milliseconds);
@@ -53,6 +78,9 @@ export default {
         },
     },
 
+    data: () => ({
+        formShowing: false,
+    }),
     computed: {
         isSmallScreen: vm => vm.$vuetify.breakpoint.smAndDown,
     },
@@ -77,6 +105,10 @@ export default {
         playerIsWinner(player, players) {
             const winner = this.getWinner(players);
             return player.name === winner.name;
+        },
+
+        openForm() {
+            console.log('open form');
         },
     },
 };
