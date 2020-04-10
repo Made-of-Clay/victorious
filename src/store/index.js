@@ -8,6 +8,22 @@ export default new Vuex.Store({
         victories: [],
         selected: 0,
     },
+    getters: {
+        players: state => state.victories.reduce((players, victory) => {
+            victory.players.forEach(player => {
+                if (!players.includes(player.name)) {
+                    players.push(player.name);
+                }
+            });
+            return players;
+        }, []),
+        games: state => state.victories.reduce((games, victory) => {
+            if (!games.includes(victory.game)) {
+                games.push(victory.game);
+            }
+            return games;
+        }, []),
+    },
     mutations: {
         updateVictories(state, victories) {
             state.victories = victories;
@@ -18,4 +34,4 @@ export default new Vuex.Store({
     },
     actions: {
     },
-})
+});
