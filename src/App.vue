@@ -10,6 +10,7 @@
         </v-app-bar>
 
         <v-content :class="$vuetify.breakpoint.xsOnly ? 'pb-6' : ''">
+            <component :is="selectedComponent" />
             <pre v-html="$store.state.victories" />
         </v-content>
 
@@ -19,6 +20,8 @@
 
 <script>
 import AppNav from './components/AppNav';
+import History from './components/History';
+import Stats from './components/Stats';
 import crown from './assets/crown.svg';
 
 export default {
@@ -26,6 +29,8 @@ export default {
 
     components: {
         AppNav,
+        History,
+        Stats,
     },
 
     inject: [
@@ -37,6 +42,7 @@ export default {
     }),
     computed: {
         showBottomNav: vm => vm.$vuetify.breakpoint.xsOnly,
+        selectedComponent: vm => vm.$store.state.selected === 0 ? 'History' : 'Stats',
     },
 
     mounted() {

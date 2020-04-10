@@ -39,9 +39,16 @@ export default {
     },
 
     data: () => ({
-        selected: 0,
     }),
     computed: {
+        selected: {
+            get() {
+                return this.$store.state.selected;
+            },
+            set(value) {
+                this.$store.commit('updateSelected', value);
+            },
+        },
         isTabs: vm => vm.component === 'v-tabs',
         itemComponent: vm => vm.isTabs ? 'v-tab' : 'v-btn',
         computedClasses: vm => !vm.isTabs ? 'elevation-2' : '',
