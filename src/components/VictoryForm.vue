@@ -43,6 +43,7 @@
 
                 <fieldset class="pa-2">
                     <legend class="px-1">Players</legend>
+                    <v-checkbox v-model="formData.teamVictory" label="Team Victory" />
                     <template v-if="formData.players.length">
                         <v-row v-for="(player, i) in formData.players" :key="`${i}-${player.name}`">
                             <v-col cols="7" md="6">
@@ -95,6 +96,11 @@
                     class="mt-2"
                 />
             </v-form>
+
+            <v-alert v-if="errorMessage" type="error" tile>
+                {{errorMessage}}
+            </v-alert>
+
             <v-card-actions>
                 <v-spacer />
                 <v-btn text @click="closeDialog">
@@ -116,6 +122,7 @@ const noteCharCap = 200;
 const getDefaultFormData = () => (Object.assign({}, {
     game: '',
     date: '',
+    teamVictory: false,
     players: [Object.assign({}, {
         name: '',
         points: 0,
@@ -124,6 +131,10 @@ const getDefaultFormData = () => (Object.assign({}, {
 }));
 
 export default {
+    inject: [
+        'firebase',
+    ],
+
     props: {
         showing: Boolean,
     },
@@ -139,6 +150,7 @@ export default {
             number: value => isNumber(value) || 'Value must be a number',
             longFieldMax: value => String(value).length <= noteCharCap || 'Value too long',
         },
+        errorMessage: '',
     }),
     computed: {
         computedDate: {
@@ -168,6 +180,7 @@ export default {
         resetForm() {
             this.$refs.form.reset();
             this.$refs.form.resetValidation();
+            this.errorMessage = '';
         },
         closeDialog() {
             this.$emit('update:showing', false);
@@ -180,7 +193,13 @@ export default {
                         player.points = Number(player.points);
                     });
                     // save to firebase
-                    console.log(JSON.parse(JSON.stringify(this.formData)));
+                    this.firebase.saveVictory(this.formData)
+                        .then(() => this.closeDialog())
+                        .catch(thrown => {
+                            console.error(thrown);
+                            this.errorMessage = thrown.message;
+                        })
+                    ;
                 }
             });
         },

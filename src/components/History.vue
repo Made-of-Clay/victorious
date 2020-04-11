@@ -51,34 +51,44 @@
                             />
                         </v-list-item>
                     </v-list>
+                    <v-card-actions>
+                        <v-spacer />
+                        <v-btn text small color="error" @click="deleteVictoryPrompt = v">
+                            <v-icon small>mdi-delete</v-icon>
+                            Delete
+                        </v-btn>
+                    </v-card-actions>
                 </v-card>
             </v-timeline-item>
         </v-timeline>
 
         <VictoryForm :showing.sync="formShowing" />
+
+        <RmVictoryConfirm :victory.sync="deleteVictoryPrompt" />
     </v-container>
 </template>
 
 <script>
 import VictoryForm from './VictoryForm';
-import twoDigits from '../twoDigits';
+import RmVictoryConfirm from './RmVictoryConfirm';
+import formatDate from '../formatDate.filter.js';
 
 export default {
     components: {
         VictoryForm,
+        RmVictoryConfirm,
     },
 
+    inject: [
+        'firebase',
+    ],
     filters: {
-        formatDate: milliseconds => {
-            const d = new Date(milliseconds);
-            const month = twoDigits(d.getMonth() + 1);
-            const day = twoDigits(d.getDate());
-            return `${month}-${day}-${d.getFullYear()}`;
-        },
+        formatDate,
     },
 
     data: () => ({
         formShowing: false,
+        deleteVictoryPrompt: {},
     }),
     computed: {
         isSmallScreen: vm => vm.$vuetify.breakpoint.smAndDown,
@@ -86,7 +96,7 @@ export default {
 
     methods: {
         getWinner(players) {
-            let winner = { points:0 };
+            let winner = (Array.isArray(players) && players.length) ? players[0] : { points:0 };
             players.forEach(player => {
                 if (player.points > winner.points) {
                     winner = player;
@@ -104,10 +114,6 @@ export default {
         playerIsWinner(player, players) {
             const winner = this.getWinner(players);
             return player.name === winner.name;
-        },
-
-        openForm() {
-            console.log('open form');
         },
     },
 };
