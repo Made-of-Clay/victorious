@@ -7,55 +7,65 @@
     >
         <v-card>
             <v-card-title>Add Victory</v-card-title>
-            <v-form class="pa-4 victoryForm__form">
-                <v-combobox
-                    v-model="game"
-                    label="Game Played"
-                    :items="$store.getters.games"
-                />
-                <v-menu
-                    v-model="datePickerShowing"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="290px"
-                >
-                    <template v-slot:activator="{on}">
-                        <v-text-field
-                            v-model="computedDate"
-                            label="Date"
-                            prepend-icon="mdi-calendar"
-                            readonly
-                            v-on="on"
+            <v-form ref="form" v-model="formIsValid" class="pa-4 victoryForm__form">
+                <v-row>
+                    <v-col cols="12" sm="6">
+                        <v-combobox
+                            v-model="formData.game"
+                            label="Game Played"
+                            :items="$store.getters.games"
+                            :rules="[rules.required]"
                         />
-                    </template>
-                    <v-date-picker v-model="date" @input="datePickerShowing = false" />
-                </v-menu>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <v-menu
+                            v-model="datePickerShowing"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="290px"
+                        >
+                            <template v-slot:activator="{on}">
+                                <v-text-field
+                                    v-model="computedDate"
+                                    label="Date"
+                                    prepend-icon="mdi-calendar"
+                                    readonly
+                                    :rules="[rules.required]"
+                                    v-on="on"
+                                />
+                            </template>
+                            <v-date-picker v-model="formData.date" @input="datePickerShowing = false" />
+                        </v-menu>
+                    </v-col>
+                </v-row>
 
                 <fieldset class="pa-2">
                     <legend class="px-1">Players</legend>
-                    <template v-if="players.length">
-                        <v-row v-for="(player, i) in players" :key="`${i}-${player.name}`">
+                    <template v-if="formData.players.length">
+                        <v-row v-for="(player, i) in formData.players" :key="`${i}-${player.name}`">
                             <v-col cols="7" md="6">
                                 <v-combobox
                                     v-model="player.name"
                                     label="Player"
                                     :items="$store.getters.players"
+                                    :rules="[rules.required]"
                                 />
                             </v-col>
                             <v-col cols="3" md="4">
                                 <v-text-field
                                     v-model="player.points"
                                     type="number"
-                                    :min="dateCaps.min"
-                                    :max="dateCaps.max"
+                                    :min="pointCaps.min"
+                                    :max="pointCaps.max"
                                     maxlength="3"
                                     label="Points"
                                 />
+                                <!-- removed required rule; just set empty to 0 when saving -->
                             </v-col>
                             <v-col cols="2" class="d-flex">
-                                <v-tooltip top>
+                                <v-tooltip v-if="i !== 0" top>
                                     <template v-slot:activator="{on}">
                                         <v-btn
                                             text icon small
@@ -76,6 +86,14 @@
                         Add Player
                     </v-btn>
                 </fieldset>
+
+                <v-textarea
+                    v-model="formData.notes"
+                    label="Notes (optional)"
+                    :counter="noteCharCap"
+                    :rules="[rules.longFieldMax]"
+                    class="mt-2"
+                />
             </v-form>
             <v-card-actions>
                 <v-spacer />
@@ -93,44 +111,87 @@
 <script>
 import twoDigits from '../twoDigits';
 
+const isNumber = value => !isNaN(Number(value));
+const noteCharCap = 200;
+const getDefaultFormData = () => (Object.assign({}, {
+    game: '',
+    date: '',
+    players: [Object.assign({}, {
+        name: '',
+        points: 0,
+    })], // { name, points }
+    notes: '',
+}));
+
 export default {
     props: {
         showing: Boolean,
     },
 
     data: () => ({
-        game: '',
-        date: (new Date()).toISOString().substr(0, 10),
-        players: [], // { name, points }
+        formIsValid: true,
+        formData: getDefaultFormData(),
         datePickerShowing: false,
-        dateCaps: { min: -100, max: 500 },
+        pointCaps: { min: -100, max: 500 },
+        noteCharCap,
+        rules: {
+            required: value => !!value || 'Field required',
+            number: value => isNumber(value) || 'Value must be a number',
+            longFieldMax: value => String(value).length <= noteCharCap || 'Value too long',
+        },
     }),
     computed: {
-        computedDate() {
-            if (!this.date) {
-                console.warn('Date was empty for some reason');
-                return '';
+        computedDate: {
+            get() {
+                if (!this.formData.date) return '';
+                const [year, month, day] = this.formData.date.split('-');
+                return `${twoDigits(month)}-${twoDigits(day)}-${year}`;
+            },
+            set: () => undefined, // only called when dialog closes - noop
+        },
+    },
+
+    watch: {
+        showing(showing) {
+            if (!showing) {
+                this.resetForm();
+            } else {
+                this.formData = getDefaultFormData(); // eventually init formData when victory is passed in to edit
+                this.$nextTick(() => {
+                    this.$refs.form.resetValidation();
+                });
             }
-            const [year, month, day] = this.date.split('-');
-            return `${twoDigits(month)}-${twoDigits(day)}-${year}`;
         },
     },
 
     methods: {
+        resetForm() {
+            this.$refs.form.reset();
+            this.$refs.form.resetValidation();
+        },
         closeDialog() {
             this.$emit('update:showing', false);
         },
         saveForm() {
-            console.log('save');
+            this.$refs.form.validate();
+            this.$nextTick(() => {
+                if (this.formIsValid) {
+                    this.formData.players.forEach(player => {
+                        player.points = Number(player.points);
+                    });
+                    // save to firebase
+                    console.log(JSON.parse(JSON.stringify(this.formData)));
+                }
+            });
         },
         addBlankPlayer() {
-            this.players.push({
+            this.formData.players.push({
                 name: '',
                 points: 0,
             });
         },
         removePlayer(index) {
-            this.players = this.players.filter((p, i) => index !== i);
+            this.formData.players = this.formData.players.filter((p, i) => index !== i);
         },
     },
 };
