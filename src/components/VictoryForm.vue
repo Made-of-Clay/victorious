@@ -8,6 +8,18 @@
         <v-card>
             <v-card-title>Add Victory</v-card-title>
             <v-form ref="form" v-model="formIsValid" class="pa-4 victoryForm__form">
+                <v-alert v-if="!formEditable" type="warning" outlined>
+                    <template v-if="!authenticated">
+                        <p>You must prove yourself worthy of victory tracking! Only if you are accepted by the mighty victors can you make history. (i.e. login to authenticate; only authorized users can make changes)</p>
+                        <v-btn text color="primary" @click="authenticate">
+                            <v-icon class="mr-2">mdi-key</v-icon>
+                            Login
+                        </v-btn>
+                    </template>
+                    <template v-else-if="!authorized">
+                        You have no power here! (not authorized user)
+                    </template>
+                </v-alert>
                 <v-row>
                     <v-col cols="12" sm="6">
                         <v-combobox
@@ -15,6 +27,7 @@
                             label="Game Played"
                             :items="$store.getters.games"
                             :rules="[rules.required]"
+                            :disabled="!formEditable"
                         />
                     </v-col>
                     <v-col cols="12" sm="6">
@@ -33,6 +46,7 @@
                                     prepend-icon="mdi-calendar"
                                     readonly
                                     :rules="[rules.required]"
+                                    :disabled="!formEditable"
                                     v-on="on"
                                 />
                             </template>
@@ -52,6 +66,7 @@
                                     label="Player"
                                     :items="$store.getters.players"
                                     :rules="[rules.required]"
+                                    :disabled="!formEditable"
                                 />
                             </v-col>
                             <v-col cols="3" md="4">
@@ -62,6 +77,7 @@
                                     :max="pointCaps.max"
                                     maxlength="3"
                                     label="Points"
+                                    :disabled="!formEditable"
                                 />
                                 <!-- removed required rule; just set empty to 0 when saving -->
                             </v-col>
@@ -82,7 +98,7 @@
                             </v-col>
                         </v-row>
                     </template>
-                    <v-btn text @click="addBlankPlayer">
+                    <v-btn text :disabled="!formEditable" @click="addBlankPlayer">
                         <v-icon>mdi-plus</v-icon>
                         Add Player
                     </v-btn>
@@ -94,6 +110,7 @@
                     :counter="noteCharCap"
                     :rules="[rules.longFieldMax]"
                     class="mt-2"
+                    :disabled="!formEditable"
                 />
             </v-form>
 
@@ -106,7 +123,12 @@
                 <v-btn text @click="closeDialog">
                     Close
                 </v-btn>
-                <v-btn color="accent" text @click="saveForm">
+                <v-btn
+                    color="accent"
+                    :disabled="!formEditable"
+                    text
+                    @click="saveForm"
+                >
                     Add Victory
                 </v-btn>
             </v-card-actions>
@@ -161,6 +183,9 @@ export default {
             },
             set: () => undefined, // only called when dialog closes - noop
         },
+        authenticated: vm => !!vm.$store.state.authenticatedUser,
+        authorized: vm => vm.$store.state.authorizedUsers.includes(vm.$store.state.authenticatedUser),
+        formEditable: vm => vm.authenticated && vm.authorized,
     },
 
     watch: {
@@ -174,6 +199,9 @@ export default {
                 });
             }
         },
+    },
+    created() {
+        this.fetchAuthorizedUsers();
     },
 
     methods: {
@@ -211,6 +239,27 @@ export default {
         },
         removePlayer(index) {
             this.formData.players = this.formData.players.filter((p, i) => index !== i);
+        },
+
+        authenticate() {
+            this.firebase.popupAuth().then(result => {
+                if (result && result.user) {
+                    const {email} = result.user;
+                    if (email) {
+                        this.$store.commit('setAuthUser', email);
+                    }
+                }
+            });
+        },
+
+        fetchAuthorizedUsers() {
+            this.firebase.getAuthorizedUsers(users => {
+                if (Array.isArray(users)) {
+                    this.$store.commit('setAuthorized', users);
+                } else {
+                    console.warn('Authorized users was not array like expected:', users);
+                }
+            });
         },
     },
 };

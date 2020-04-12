@@ -21,13 +21,13 @@
                 </template>
             </v-timeline-item>
             <v-timeline-item
-                v-for="v in $store.state.victories"
+                v-for="v in sortedVictories"
                 :key="v.id"
                 color="secondary"
                 small
             >
                 <template v-slot:opposite>
-                    <span>{{v.date | formatDate}}</span>
+                    <span class="title">{{v.date | formatDate}}</span>
                 </template>
                 <v-card max-width="500">
                     <v-card-title class="headline">
@@ -92,6 +92,11 @@ export default {
     }),
     computed: {
         isSmallScreen: vm => vm.$vuetify.breakpoint.smAndDown,
+        sortedVictories: vm => vm.$store.state.victories.sort((a, b) => {
+            if (a < b) return -1;
+            if (a === b) return 0;
+            if (a > b) return 1;
+        }),
     },
 
     methods: {

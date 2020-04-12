@@ -23,9 +23,17 @@ const firebasePlugin = {
 
     popupAuth() {
         return firebase.auth().signInWithPopup(provider)
-            .then(console.log)
-            .catch(thrown => console.error('Firebase Auth Error >> ', thrown))
-        ;
+            .catch(thrown => console.error('Firebase Auth Error >> ', thrown));
+    },
+
+    getAuthorizedUsers(userHandlerFunc) {
+        this.db.collection('users').onSnapshot(querySnapshot => {
+            console.log('querySnapshot', querySnapshot);
+            const users = querySnapshot.docs.map(doc => doc.data().email);
+            if (typeof userHandlerFunc === 'function') {
+                userHandlerFunc(users);
+            }
+        });
     },
 
     getVictories(saveFunc) {

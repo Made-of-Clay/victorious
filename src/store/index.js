@@ -7,6 +7,8 @@ export default new Vuex.Store({
     state: {
         victories: [],
         selected: 0,
+        authenticatedUser: '',
+        authorizedUsers: [],
     },
     getters: {
         players: state => state.victories.reduce((players, victory) => {
@@ -30,6 +32,12 @@ export default new Vuex.Store({
         },
         updateSelected(state, selected) {
             state.selected = selected;
+        },
+        setAuthUser(state, email = '') {
+            state.authenticatedUser = email;
+        },
+        setAuthorized(state, authorizedUsers) {
+            state.authorizedUsers = authorizedUsers;
         },
     },
     actions: {
