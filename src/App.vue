@@ -13,7 +13,8 @@
             <component :is="selectedComponent" />
         </v-content>
 
-        <AppNav v-if="showBottomNav" component="v-bottom-navigation" />
+        <!-- TODO reconsider if this is necessary... leave for now -->
+        <!-- <AppNav v-if="showBottomNav" component="v-bottom-navigation" /> -->
     </v-app>
 </template>
 
