@@ -55,9 +55,35 @@
                     </v-col>
                 </v-row>
 
-                <fieldset class="pa-2">
+
+                <v-combobox
+                    v-model="formData.players"
+                    :items="$store.getters.players"
+                    label="Players"
+                    :disabled="!formEditable"
+                    :rules="[rules.requiredPlayers]"
+                    multiple chips
+                />
+                <v-row dense>
+                    <v-col cols="12" sm="6">
+                        <v-checkbox
+                            v-model="formData.teamVictory"
+                            :disabled="!formData.players.length"
+                            label="Team Victory"
+                        />
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <v-select
+                            v-model="formData.victoriousPlayer"
+                            :items="formData.players"
+                            :disabled="!formData.players.length || formData.teamVictory"
+                            label="Victorious Player"
+                            clearable
+                        />
+                    </v-col>
+                </v-row>
+                <!-- <fieldset class="pa-2">
                     <legend class="px-1">Players</legend>
-                    <v-checkbox v-model="formData.teamVictory" label="Team Victory" />
                     <template v-if="formData.players.length">
                         <v-row v-for="(player, i) in formData.players" :key="`${i}-${player.name}`">
                             <v-col cols="7" md="6">
@@ -79,7 +105,7 @@
                                     label="Points"
                                     :disabled="!formEditable"
                                 />
-                                <!-- removed required rule; just set empty to 0 when saving -->
+                                <-- removed required rule; just set empty to 0 when saving --
                             </v-col>
                             <v-col cols="2" class="d-flex">
                                 <v-tooltip v-if="formData.players.length > 1" top>
@@ -102,11 +128,11 @@
                         <v-icon>mdi-plus</v-icon>
                         {{action}} Player
                     </v-btn>
-                </fieldset>
+                </fieldset> -->
 
                 <v-textarea
                     v-model="formData.notes"
-                    label="Notes (optional)"
+                    label="Notes"
                     :counter="noteCharCap"
                     :rules="[rules.longFieldMax]"
                     class="mt-2"
@@ -144,11 +170,9 @@ const noteCharCap = 200;
 const getDefaultFormData = () => (Object.assign({}, {
     game: '',
     date: '',
+    players: [],
     teamVictory: false,
-    players: [Object.assign({}, {
-        name: '',
-        points: 0,
-    })], // { name, points }
+    victoriousPlayer: '',
     notes: '',
 }));
 
@@ -173,6 +197,7 @@ export default {
         noteCharCap,
         rules: {
             required: value => !!value || 'Field required',
+            requiredPlayers: players => !!players.length || 'At least 1 required',
             number: value => isNumber(value) || 'Value must be a number',
             longFieldMax: value => String(value).length <= noteCharCap || 'Value too long',
         },
@@ -205,6 +230,16 @@ export default {
                 this.resetForm();
             }
         },
+        'formData.victoriousPlayer'(player) {
+            if (typeof player === 'undefined') {
+                this.formData.victoriousPlayer = '';
+            }
+        },
+        'formData.teamVictory'(teamVictory) {
+            if (teamVictory) {
+                this.formData.victoriousPlayer = '';
+            }
+        },
     },
     created() {
         this.$store.dispatch('getAuthorizedUsers');
@@ -225,9 +260,9 @@ export default {
             this.$refs.form.validate();
             this.$nextTick(() => {
                 if (this.formIsValid) {
-                    this.formData.players.forEach(player => {
-                        player.points = Number(player.points);
-                    });
+                    // this.formData.players.forEach(player => {
+                    //     player.points = Number(player.points);
+                    // });
                     // save to firebase
                     const method = this.editExistingVictory ? 'updateVictory' : 'addVictory';
                     this.firebase[method](this.formData)
@@ -240,15 +275,15 @@ export default {
                 }
             });
         },
-        addBlankPlayer() {
-            this.formData.players.push({
-                name: '',
-                points: 0,
-            });
-        },
-        removePlayer(index) {
-            this.formData.players = this.formData.players.filter((p, i) => index !== i);
-        },
+        // addBlankPlayer() {
+        //     this.formData.players.push({
+        //         name: '',
+        //         points: 0,
+        //     });
+        // },
+        // removePlayer(index) {
+        //     this.formData.players = this.formData.players.filter((p, i) => index !== i);
+        // },
 
         authenticate() {
             this.$store.dispatch('popupAuth');

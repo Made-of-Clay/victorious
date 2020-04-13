@@ -46,11 +46,11 @@
                                 <template v-if="v.teamVictory">
                                     Team Victory! 🎉
                                 </template>
-                                <template v-else-if="teamLoss(v)">
+                                <template v-else-if="!v.victoriousPlayer">
                                     Team Loss ☹️
                                 </template>
                                 <template v-else>
-                                    {{getWinner(v.players).name}}
+                                    {{getWinner(v)}}
                                 </template>
                             </b>
                         </span>
@@ -61,14 +61,14 @@
                         <v-col cols="12" md="6">
                             <div
                                 v-for="player in v.players"
-                                :key="`${v.id}-${player.name}`"
+                                :key="`${v.id}-${player}`"
                                 class="mb-1"
                             >
-                                <span :class="playerIsWinner(player, v) ? 'primary--text' : ''">
-                                    {{player.name}}
+                                <span :class="player === getWinner(v) ? 'primary--text' : ''">
+                                    {{player}}
                                 </span>
                                 <v-icon
-                                    v-if="playerIsWinner(player, v)"
+                                    v-if="player === getWinner(v)"
                                     color="primary"
                                     class="ml-2"
                                     v-text="'mdi-star'"
@@ -78,7 +78,7 @@
                         <v-col cols="12" md="6">
                             <template v-if="v.notes">
                                 Notes
-                                <pre class="ma-0 body-2 grey--text lighten-1" v-text="`${v.notes}`" />
+                                <pre class="ma-0 body-2 grey--text lighten-1 history__notes" v-text="`${v.notes}`" />
                             </template>
                         </v-col>
                     </v-row>
@@ -136,32 +136,15 @@ export default {
     },
 
     methods: {
-        getWinner(players = []) {
-            return players.reduce((winner, player) => {
-                if (player.points > winner.points) {
-                    winner = player;
-                }
-                return winner;
-            }, {points:0});
+        getWinner(victory) {
+            const index = victory.players.indexOf(victory.victoriousPlayer);
+            return index > -1 ? victory.players[index] : 'no winner';
         },
 
         getPointColor(player, players) {
             const winner = this.getWinner(players);
             const color = player.name === winner.name ? 'primary' : 'accent';
             return `${color}--text`;
-        },
-
-        teamLoss(victory) {
-            if (victory.teamVictory) return false;
-            const points = victory.players.map(player => Number(player.points));
-            const dedupPoints = [...new Set(points)];
-            return dedupPoints.length === 1;
-        },
-
-        playerIsWinner(player, victory) {
-            if (victory.teamVictory || this.teamLoss(victory)) return false; // no highlighting when everyone wins
-            const winner = this.getWinner(victory.players);
-            return player.name === winner.name;
         },
 
         editVictory(victory) {
@@ -173,4 +156,7 @@ export default {
 </script>
 
 <style>
+.history__notes {
+    white-space: pre-wrap;
+}
 </style>

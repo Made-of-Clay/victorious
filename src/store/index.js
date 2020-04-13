@@ -14,8 +14,8 @@ export default new Vuex.Store({
     getters: {
         players: state => state.victories.reduce((players, victory) => {
             victory.players.forEach(player => {
-                if (!players.includes(player.name)) {
-                    players.push(player.name);
+                if (!players.includes(player)) {
+                    players.push(player);
                 }
             });
             return players;

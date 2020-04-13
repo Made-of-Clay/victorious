@@ -46,10 +46,10 @@ const firebasePlugin = {
     /**
      * Remove record from Firebase
      * @param {string} id Firebase-generated id of record to remove
-     * @returns void
+     * @returns Promise No returned value; Promise<void>
      */
     removeVictory(id) {
-        this.victories.doc(id).delete();
+        return this.victories.doc(id).delete();
     },
 };
 
