@@ -57,6 +57,11 @@ export default new Vuex.Store({
                 querySnapshot.forEach(doc => {
                     docs.push(Object.assign({ id: doc.id }, doc.data()))
                 });
+                docs.sort((a, b) => {
+                    if (a.date < b.date) return -1;
+                    if (a.date === b.date) return 0;
+                    if (a.date > b.date) return 1;
+                }); // sorts by date asc
                 commit('updateVictories', docs);
             });
         },

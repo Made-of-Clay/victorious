@@ -1,5 +1,15 @@
 <template>
     <v-container tag="article" style="position:relative">
+        <div>
+            <v-text-field
+                v-model="searchFilter"
+                label="Search"
+                class="d-inline-block mr-4"
+                clearable
+            />
+            <v-checkbox v-model="sortHistoryDesc" label="Reverse Order" class="d-inline-block" />
+        </div>
+
         <h1 :class="isSmallScreen ? '' : 'text-center'">History of Victory</h1>
 
         <!-- if bottom nav is kept, put mb-12 on this push it above the bottom nav - looks a little weird though... -->
@@ -30,7 +40,7 @@
                 </template>
             </v-timeline-item>
             <v-timeline-item
-                v-for="v in sortedVictories"
+                v-for="v in filteredVictories"
                 :key="v.id"
                 color="secondary"
                 small
@@ -107,6 +117,7 @@
 import VictoryForm from './VictoryForm';
 import RmVictoryConfirm from './RmVictoryConfirm';
 import formatDate from '../formatDate.filter.js';
+import {clone} from '../utils';
 
 export default {
     components: {
@@ -125,14 +136,26 @@ export default {
         formShowing: false,
         deleteVictoryPrompt: {},
         editingVictory: {},
+        searchFilter: '',
+        sortHistoryDesc: true,
     }),
     computed: {
         isSmallScreen: vm => vm.$vuetify.breakpoint.smAndDown,
-        sortedVictories: vm => vm.$store.state.victories.sort((a, b) => {
-            if (a.date < b.date) return -1;
-            if (a.date === b.date) return 0;
-            if (a.date > b.date) return 1;
-        }).reverse(),
+        filteredVictories() {
+            let victories = clone(this.$store.state.victories, true); // deep clone
+            if (this.searchFilter) {
+                const searchTerms = this.searchFilter.replace(' ', '|');
+                const reSearch = new RegExp(searchTerms, 'i');
+                victories = victories.filter(victory => {
+                    const valuesToSearch = [victory.game, victory.date, ...victory.players];
+                    return valuesToSearch.find(toSearch => reSearch.test(toSearch));
+                });
+            }
+            if (this.sortHistoryDesc) {
+                victories = victories.reverse();
+            }
+            return victories;
+        },
     },
 
     methods: {
