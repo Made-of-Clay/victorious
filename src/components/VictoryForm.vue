@@ -6,7 +6,7 @@
         @input="$emit('update:showing', $event)"
     >
         <v-card>
-            <v-card-title>Add Victory</v-card-title>
+            <v-card-title>{{action}} Victory</v-card-title>
             <v-form ref="form" v-model="formIsValid" class="pa-4 victoryForm__form">
                 <v-alert v-if="!formEditable" type="warning" outlined>
                     <template v-if="!authenticated">
@@ -82,7 +82,7 @@
                                 <!-- removed required rule; just set empty to 0 when saving -->
                             </v-col>
                             <v-col cols="2" class="d-flex">
-                                <v-tooltip v-if="i !== 0" top>
+                                <v-tooltip v-if="formData.players.length > 1" top>
                                     <template v-slot:activator="{on}">
                                         <v-btn
                                             text icon small
@@ -93,14 +93,14 @@
                                             <v-icon small>mdi-minus-circle</v-icon>
                                         </v-btn>
                                     </template>
-                                    Remove Player
+                                    Remove {{player.name}} from {{formData.game}}
                                 </v-tooltip>
                             </v-col>
                         </v-row>
                     </template>
                     <v-btn text :disabled="!formEditable" @click="addBlankPlayer">
                         <v-icon>mdi-plus</v-icon>
-                        Add Player
+                        {{action}} Player
                     </v-btn>
                 </fieldset>
 
@@ -129,7 +129,7 @@
                     text
                     @click="saveForm"
                 >
-                    Add Victory
+                    {{action}}
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -159,11 +159,15 @@ export default {
 
     props: {
         showing: Boolean,
+        victory: {
+            type: Object,
+            default: () => ({}),
+        },
     },
 
-    data: () => ({
+    data: vm => ({
         formIsValid: true,
-        formData: getDefaultFormData(),
+        formData: vm.editExistingVictory ? vm.victory : getDefaultFormData(), // probably always default values, but this scales better
         datePickerShowing: false,
         pointCaps: { min: -100, max: 500 },
         noteCharCap,
@@ -185,17 +189,20 @@ export default {
         },
         authenticated: vm => !!vm.$store.state.authenticatedUser,
         formEditable: vm => vm.authenticated && vm.$store.getters.userIsAuthorized,
+        editExistingVictory: vm => Object.keys(vm.victory).length > 0,
+        action: vm => vm.editExistingVictory ? 'Update' : 'Add',
     },
 
     watch: {
         showing(showing) {
-            if (!showing) {
-                this.resetForm();
-            } else {
-                this.formData = getDefaultFormData(); // eventually init formData when victory is passed in to edit
+            if (showing) {
+                const clone = value => JSON.parse(JSON.stringify(value)); // a bit hackey and not super performant, but sufficient at this scale
+                this.formData = this.editExistingVictory ? clone(this.victory) : getDefaultFormData(); // eventually init formData when victory is passed in to edit
                 this.$nextTick(() => {
                     this.$refs.form.resetValidation();
                 });
+            } else {
+                this.resetForm();
             }
         },
     },
@@ -208,6 +215,8 @@ export default {
             this.$refs.form.reset();
             this.$refs.form.resetValidation();
             this.errorMessage = '';
+            this.$emit('update:victory', {});
+            this.formData = getDefaultFormData();
         },
         closeDialog() {
             this.$emit('update:showing', false);
@@ -220,7 +229,8 @@ export default {
                         player.points = Number(player.points);
                     });
                     // save to firebase
-                    this.firebase.saveVictory(this.formData)
+                    const method = this.editExistingVictory ? 'updateVictory' : 'addVictory';
+                    this.firebase[method](this.formData)
                         .then(() => this.closeDialog())
                         .catch(thrown => {
                             console.error(thrown);
