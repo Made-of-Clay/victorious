@@ -49,8 +49,8 @@
                     <span class="title">{{v.date | formatDate}}</span>
                 </template>
                 <v-card max-width="500">
-                    <v-card-title class="headline">
-                        <span>
+                    <v-card-title class="headline " :class="xsDisplay ? 'd-block' : ''">
+                        <span class="d-block history__itemTitle">
                             {{v.game}} -
                             <b class="primary--text">
                                 <template v-if="v.teamVictory">
@@ -65,7 +65,9 @@
                             </b>
                         </span>
                         <v-spacer />
-                        <small v-if="isSmallScreen">{{v.date | formatDate}}</small>
+                        <small v-if="isSmallScreen">
+                            {{v.date | formatDate}}
+                        </small>
                     </v-card-title>
                     <v-row dense class="pl-4">
                         <v-col cols="12" md="6">
@@ -156,6 +158,7 @@ export default {
             }
             return victories;
         },
+        xsDisplay: vm => vm.$vuetify.breakpoint.xs,
     },
 
     methods: {
@@ -181,5 +184,8 @@ export default {
 <style>
 .history__notes {
     white-space: pre-wrap;
+}
+.history__itemTitle {
+    word-break: break-word;
 }
 </style>
