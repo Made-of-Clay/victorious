@@ -55,7 +55,6 @@
                     </v-col>
                 </v-row>
 
-
                 <v-combobox
                     v-model="formData.players"
                     :items="$store.getters.players"
@@ -82,53 +81,6 @@
                         />
                     </v-col>
                 </v-row>
-                <!-- <fieldset class="pa-2">
-                    <legend class="px-1">Players</legend>
-                    <template v-if="formData.players.length">
-                        <v-row v-for="(player, i) in formData.players" :key="`${i}-${player.name}`">
-                            <v-col cols="7" md="6">
-                                <v-combobox
-                                    v-model="player.name"
-                                    label="Player"
-                                    :items="$store.getters.players"
-                                    :rules="[rules.required]"
-                                    :disabled="!formEditable"
-                                />
-                            </v-col>
-                            <v-col cols="3" md="4">
-                                <v-text-field
-                                    v-model="player.points"
-                                    type="number"
-                                    :min="pointCaps.min"
-                                    :max="pointCaps.max"
-                                    maxlength="3"
-                                    label="Points"
-                                    :disabled="!formEditable"
-                                />
-                                <-- removed required rule; just set empty to 0 when saving --
-                            </v-col>
-                            <v-col cols="2" class="d-flex">
-                                <v-tooltip v-if="formData.players.length > 1" top>
-                                    <template v-slot:activator="{on}">
-                                        <v-btn
-                                            text icon small
-                                            class="align-self-center"
-                                            @click="removePlayer(i)"
-                                            v-on="on"
-                                        >
-                                            <v-icon small>mdi-minus-circle</v-icon>
-                                        </v-btn>
-                                    </template>
-                                    Remove {{player.name}} from {{formData.game}}
-                                </v-tooltip>
-                            </v-col>
-                        </v-row>
-                    </template>
-                    <v-btn text :disabled="!formEditable" @click="addBlankPlayer">
-                        <v-icon>mdi-plus</v-icon>
-                        {{action}} Player
-                    </v-btn>
-                </fieldset> -->
 
                 <v-textarea
                     v-model="formData.notes"
@@ -260,10 +212,6 @@ export default {
             this.$refs.form.validate();
             this.$nextTick(() => {
                 if (this.formIsValid) {
-                    // this.formData.players.forEach(player => {
-                    //     player.points = Number(player.points);
-                    // });
-                    // save to firebase
                     const method = this.editExistingVictory ? 'updateVictory' : 'addVictory';
                     this.firebase[method](this.formData)
                         .then(() => this.closeDialog())
@@ -275,15 +223,6 @@ export default {
                 }
             });
         },
-        // addBlankPlayer() {
-        //     this.formData.players.push({
-        //         name: '',
-        //         points: 0,
-        //     });
-        // },
-        // removePlayer(index) {
-        //     this.formData.players = this.formData.players.filter((p, i) => index !== i);
-        // },
 
         authenticate() {
             this.$store.dispatch('popupAuth');
