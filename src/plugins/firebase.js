@@ -20,23 +20,36 @@ const provider = new firebase.auth.GoogleAuthProvider(); // https://firebase.goo
 const firebasePlugin = {
     // app: fbApp, // not used?
     db: firebase.firestore(),
+    get victories() {
+        return this.db.collection('victories');
+    },
 
     popupAuth: () => firebase.auth().signInWithPopup(provider),
+
     /**
      * Set victory to Firebase (add/update?) - schema is as follows
      * @param Object data Victory data
+     * @property mixed   id  Firebase-generated id for updates (undefined for new records)
      * @property String  date  Date of victory
      * @property String  game  Game of victory
      * @property String  note  Optional note about victory
      * @property mixed   player  Victorious player(s) - Array | String
      * @property Boolean victorious  Was the game victorious (for group games)
      */
-    saveVictory(data) {
-        return this.db.collection('victories').doc().set(data);
+    addVictory(data) {
+        return this.victories.doc().set(data);
+    },
+    updateVictory(data) {
+        return this.victories.doc(data.id).update(data);
     },
 
+    /**
+     * Remove record from Firebase
+     * @param {string} id Firebase-generated id of record to remove
+     * @returns void
+     */
     removeVictory(id) {
-        return this.db.collection('victories').doc(id).delete();
+        this.victories.doc(id).delete();
     },
 };
 
