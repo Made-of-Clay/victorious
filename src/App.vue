@@ -11,7 +11,6 @@
 
         <v-content :class="$vuetify.breakpoint.xsOnly ? 'pb-6' : ''">
             <component :is="selectedComponent" />
-            <pre v-html="$store.state.victories" />
         </v-content>
 
         <AppNav v-if="showBottomNav" component="v-bottom-navigation" />
@@ -46,15 +45,15 @@ export default {
     },
 
     mounted() {
-        this.getVictories();
+        this.$store.dispatch('getVictories');
     },
 
     methods: {
-        getVictories() {
-            this.firebase.getVictories(victories => {
-                this.$store.commit('updateVictories', victories);
-            });
-        },
+        // getVictories() {
+        //     this.firebase.getVictories(victories => {
+        //         this.$store.commit('updateVictories', victories);
+        //     });
+        // },
     },
 };
 </script>

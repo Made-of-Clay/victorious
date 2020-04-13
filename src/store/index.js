@@ -1,7 +1,8 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import firebase from '../plugins/firebase';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
@@ -25,6 +26,7 @@ export default new Vuex.Store({
             }
             return games;
         }, []),
+        userIsAuthorized: state => state.authorizedUsers.includes(state.authenticatedUser),
     },
     mutations: {
         updateVictories(state, victories) {
@@ -37,9 +39,39 @@ export default new Vuex.Store({
             state.authenticatedUser = email;
         },
         setAuthorized(state, authorizedUsers) {
-            state.authorizedUsers = authorizedUsers;
+            if (Array.isArray(authorizedUsers) && authorizedUsers.length) {
+                state.authorizedUsers = authorizedUsers;
+            }
         },
     },
     actions: {
+        getAuthorizedUsers({commit}) {
+            firebase.db.collection('users').onSnapshot(querySnapshot => {
+                const users = querySnapshot.docs.map(doc => doc.data().email);
+                commit('setAuthorized', users);
+            });
+        },
+        getVictories({commit}) {
+            firebase.db.collection('victories').onSnapshot(querySnapshot => {
+                let docs = [];
+                querySnapshot.forEach(doc => {
+                    docs.push(Object.assign({ id: doc.id }, doc.data()))
+                });
+                commit('updateVictories', docs);
+            });
+        },
+        popupAuth({commit}) {
+            firebase.popupAuth()
+                .then(result => {
+                    if (result && result.user) {
+                        const {email} = result.user;
+                        if (email) {
+                            commit('setAuthUser', email);
+                        }
+                    }
+                })
+                .catch(thrown => console.error('Firebase Auth Error >> ', thrown))
+            ;
+        },
     },
 });

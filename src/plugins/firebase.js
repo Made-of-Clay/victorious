@@ -6,7 +6,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 
-const fbApp = firebase.initializeApp({
+/* const fbApp =  */firebase.initializeApp({
     apiKey: 'AIzaSyBAqTed5sSoQGflprtOFFgUrNZGIL0Gct0',
     authDomain: 'victorious-f35d3.firebaseapp.com',
     databaseURL: 'https://victorious-f35d3.firebaseio.com',
@@ -18,34 +18,10 @@ const fbApp = firebase.initializeApp({
 const provider = new firebase.auth.GoogleAuthProvider(); // https://firebase.google.com/docs/auth/web/google-signin#handle_the_sign-in_flow_with_the_firebase_sdk
 
 const firebasePlugin = {
-    app: fbApp,
+    // app: fbApp, // not used?
     db: firebase.firestore(),
 
-    popupAuth() {
-        return firebase.auth().signInWithPopup(provider)
-            .catch(thrown => console.error('Firebase Auth Error >> ', thrown));
-    },
-
-    getAuthorizedUsers(userHandlerFunc) {
-        this.db.collection('users').onSnapshot(querySnapshot => {
-            console.log('querySnapshot', querySnapshot);
-            const users = querySnapshot.docs.map(doc => doc.data().email);
-            if (typeof userHandlerFunc === 'function') {
-                userHandlerFunc(users);
-            }
-        });
-    },
-
-    getVictories(saveFunc) {
-        this.unsubscribeGames = this.db.collection('victories')
-            .onSnapshot(querySnapshot => {
-                let docs = [];
-                querySnapshot.forEach(doc => {
-                    docs.push(Object.assign({ id: doc.id }, doc.data()))
-                });
-                saveFunc(docs);
-            });
-    },
+    popupAuth: () => firebase.auth().signInWithPopup(provider),
     /**
      * Set victory to Firebase (add/update?) - schema is as follows
      * @param Object data Victory data
@@ -63,7 +39,5 @@ const firebasePlugin = {
         return this.db.collection('victories').doc(id).delete();
     },
 };
-
-// firebasePlugin.db.sett;
 
 export default firebasePlugin;

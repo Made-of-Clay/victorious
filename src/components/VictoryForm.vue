@@ -184,8 +184,7 @@ export default {
             set: () => undefined, // only called when dialog closes - noop
         },
         authenticated: vm => !!vm.$store.state.authenticatedUser,
-        authorized: vm => vm.$store.state.authorizedUsers.includes(vm.$store.state.authenticatedUser),
-        formEditable: vm => vm.authenticated && vm.authorized,
+        formEditable: vm => vm.authenticated && vm.$store.getters.userIsAuthorized,
     },
 
     watch: {
@@ -201,7 +200,7 @@ export default {
         },
     },
     created() {
-        this.fetchAuthorizedUsers();
+        this.$store.dispatch('getAuthorizedUsers');
     },
 
     methods: {
@@ -242,24 +241,7 @@ export default {
         },
 
         authenticate() {
-            this.firebase.popupAuth().then(result => {
-                if (result && result.user) {
-                    const {email} = result.user;
-                    if (email) {
-                        this.$store.commit('setAuthUser', email);
-                    }
-                }
-            });
-        },
-
-        fetchAuthorizedUsers() {
-            this.firebase.getAuthorizedUsers(users => {
-                if (Array.isArray(users)) {
-                    this.$store.commit('setAuthorized', users);
-                } else {
-                    console.warn('Authorized users was not array like expected:', users);
-                }
-            });
+            this.$store.dispatch('popupAuth');
         },
     },
 };
