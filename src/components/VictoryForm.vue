@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import twoDigits from '../twoDigits';
+import {twoDigits} from '../utils';
 
 const isNumber = value => !isNaN(Number(value));
 const noteCharCap = 200;

@@ -1,4 +1,4 @@
-import twoDigits from './twoDigits';
+import {twoDigits} from './utils';
 
 export default function formatDate(dateStr) {
     const d = new Date(`${dateStr} 00:00:00`);
