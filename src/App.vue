@@ -13,10 +13,6 @@
             <component :is="selectedComponent" />
         </v-content>
 
-        <!-- <v-btn fab fixed bottom left @click="importVictories">
-            <v-icon>mdi-import</v-icon>
-        </v-btn> -->
-
         <!-- TODO reconsider if this is necessary... leave for now -->
         <!-- <AppNav v-if="showBottomNav" component="v-bottom-navigation" /> -->
     </v-app>
@@ -54,21 +50,6 @@ export default {
     },
 
     methods: {
-        // importVictories() {
-        //     import('./victory-data.json')
-        //         .then(data => data.default)
-        //         .then(json => {
-        //             const batch = this.firebase.db.batch();
-        //             json.forEach(v => {
-        //                 batch.set(this.firebase.victories.doc(), v);
-        //             })
-        //             batch.commit().then(result => {
-        //                 console.log('batch commit result:', result);
-        //             })
-        //         })
-        //         .catch(console.error)
-        //     ;
-        // },
     },
 };
 </script>
