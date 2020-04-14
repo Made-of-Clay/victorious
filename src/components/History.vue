@@ -58,6 +58,14 @@
                     </v-tooltip>
                 </template>
             </v-timeline-item>
+            <v-alert
+                v-if="!filteredVictories.length"
+                class="text-center mx-auto"
+                max-width="300"
+                elevation="2"
+            >
+                No history to show
+            </v-alert>
             <v-timeline-item
                 v-for="v in filteredVictories"
                 :key="v.id"
