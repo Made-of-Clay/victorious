@@ -24,7 +24,7 @@ export default new Vuex.Store({
             if (!games.includes(victory.game)) {
                 games.push(victory.game);
             }
-            return games;
+            return games.sort();
         }, []),
         userIsAuthorized: state => state.authorizedUsers.includes(state.authenticatedUser),
     },
