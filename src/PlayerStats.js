@@ -24,7 +24,7 @@ export default class PlayerStats {
 
     calcTotalWinsYear(date) {
         const curYear = (new Date()).getFullYear();
-        if (date.substr(0, 4) === curYear) {
+        if (date.substr(0, 4) === String(curYear)) {
             this.player.totalWinsYear++;
         }
     }
