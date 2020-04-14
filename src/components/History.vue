@@ -75,7 +75,7 @@
                 <template v-slot:opposite>
                     <span class="title">{{v.date | formatDate}}</span>
                 </template>
-                <v-card max-width="500">
+                <v-card>
                     <v-card-title class="headline " :class="xsDisplay ? 'd-block' : ''">
                         <span class="d-block history__itemTitle">
                             {{v.game}} -
