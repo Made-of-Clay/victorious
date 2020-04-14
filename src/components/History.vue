@@ -1,16 +1,35 @@
 <template>
-    <v-container tag="article" style="position:relative">
-        <div>
-            <v-text-field
-                v-model="searchFilter"
-                label="Search"
-                class="d-inline-block mr-4"
-                clearable
-            />
-            <v-checkbox v-model="sortHistoryDesc" label="Reverse Order" class="d-inline-block" />
-        </div>
+    <v-container tag="article" style="position:relative" fluid>
+        <v-row dense>
+            <v-col cols="12" sm="4" md="3" lg="2" xl="1">
+                <v-text-field
+                    v-model="searchFilter"
+                    label="Search"
+                    class="d-inline-block mr-4"
+                    clearable
+                />
+            </v-col>
+            <v-col cols="12" sm="4" md="3" lg="2" xl="1">
+                <v-select
+                    v-model="showLimit"
+                    :items="showLimitItems"
+                    label="Show"
+                    class="d-inline-block"
+                    hide-details
+                />
+            </v-col>
+            <v-col cols="12" sm="4" md="3" lg="2" xl="1">
+                <v-checkbox v-model="sortHistoryDesc" label="Reverse Order" class="d-inline-block" />
+            </v-col>
+        </v-row>
 
-        <h1 :class="isSmallScreen ? '' : 'text-center'">History of Victory</h1>
+        <h1 :class="isSmallScreen ? '' : 'text-center'">
+            History of Victory
+            <small
+                class="d-block body-1"
+                v-text="`(${filteredVictories.length} Showing)`"
+            />
+        </h1>
 
         <!-- if bottom nav is kept, put mb-12 on this push it above the bottom nav - looks a little weird though... -->
         <v-btn
@@ -121,6 +140,8 @@ import RmVictoryConfirm from './RmVictoryConfirm';
 import formatDate from '../formatDate.filter.js';
 import {clone} from '../utils';
 
+const newestLimit = 'Newest 20';
+
 export default {
     components: {
         VictoryForm,
@@ -140,6 +161,7 @@ export default {
         editingVictory: {},
         searchFilter: '',
         sortHistoryDesc: true,
+        showLimit: newestLimit,
     }),
     computed: {
         isSmallScreen: vm => vm.$vuetify.breakpoint.smAndDown,
@@ -156,9 +178,22 @@ export default {
             if (this.sortHistoryDesc) {
                 victories = victories.reverse();
             }
+            victories = this.showLimit === newestLimit
+                ? victories.slice(0, Number(newestLimit.substr(7)))
+                : (/20\d\d/.test(this.showLimit)
+                    ? victories.filter(v => v.date.substr(0, 4) === this.showLimit)
+                    : victories);
             return victories;
         },
         xsDisplay: vm => vm.$vuetify.breakpoint.xs,
+        showLimitItems() {
+            let years = this.$store.state.victories.map(v => v.date.substr(0, 4)).sort().reverse();
+            return [
+                newestLimit,
+                ...(new Set(years)),
+                'Show All',
+            ];
+        },
     },
 
     methods: {
