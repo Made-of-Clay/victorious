@@ -30,7 +30,7 @@ export default class PlayerStats {
     }
 
     calcStreak(victory) {
-        if (this.streak.lastWinner === victory.victoriousPlayer) {
+        if (this.streak.prevWinner === victory.victoriousPlayer) {
             this.streak.curCount++;
             if (this.player.longestStreak < this.streak.curCount) {
                 this.player.longestStreak = this.streak.curCount;
