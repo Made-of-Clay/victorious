@@ -1,4 +1,8 @@
-# victorious
+# Victorious
+
+The Victorious! project works to track the history of game wins for a small group I am part of that meets weekly to play games and socialize. These are not games like Monopoly or LIFE; these are games from the Eurogaming Renaissance like Agricola, Tzolkein, and Through the Ages.
+
+Victories are tracked and stats are displayed for games and players. This project was built using `vue-cli`, so the generated readme.md code is preserved below for posterity. The web app itself can be found [here](http://victorious.adamleis.com).
 
 ## Project setup
 ```
