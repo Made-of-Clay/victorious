@@ -22,4 +22,5 @@ This project has fallen into neglect and could use refactoring.
 - probably use Vite for bundling
 - make PWA and work offline
 - ci/cd to Firebase via GitHub Actions
+- ideally figure out web component unit testing via Vitest
 
