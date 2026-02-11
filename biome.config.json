@@ -1,0 +1,26 @@
+{
+	"root": true,
+	"extends": ["biome:recommended"],
+	"files": {
+		"ignore": ["node_modules", "dist", "build", "public", "Victorious"]
+	},
+	"formatter": {
+		"indentStyle": "space",
+		"indentSize": 4,
+		"lineWidth": 140,
+		"semi": true,
+		"singleQuote": true,
+		"quoteStyle": "single",
+		"trailingComma": "all"
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single"
+		}
+	},
+	"linter": {
+		"rules": {
+			"recommended": true
+		}
+	}
+}
