@@ -24,3 +24,36 @@ This project has fallen into neglect and could use refactoring.
 - ci/cd to Firebase via GitHub Actions
 - ideally figure out web component unit testing via Vitest
 
+## Site Structure
+
+Home / History View
+
+header with centered tab navigation (History & Stats)
+
+Search input - Show (Filter) - Checkbox "Reverse Order"
+Heading "History of Victory" with "(N showing)" beneath it
+Timeline component showing data
+    "Add" button
+    cards
+        heading game title
+        date played
+        players w/ victory star
+        notes output
+authenticate button (when not authed)
+add/edit modal
+    modal title "Add/Update Victory"
+    game played (combobox) - date field
+    players multiselect
+    team victory checkbox - victorious player (select of options only players)
+    notes input field
+    Close modal button - Update/Add button
+
+select "victory totals" OR players stats - grand total select (game options)
+circle graph data/stats
+
+## Components
+
+- tabs (take tab names string array)
+- timeline (use `template` in slot to define card layout)
+- card? may need to keep in light DOM to use styles
+- circle graph/chart
