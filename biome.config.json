@@ -22,5 +22,10 @@
 		"rules": {
 			"recommended": true
 		}
+	},
+	"html": {
+		"formatter": {
+			"enabled": true
+		}
 	}
 }

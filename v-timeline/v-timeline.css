@@ -1,0 +1,24 @@
+v-timeline {
+	--borderColor: var(--pico-secondary);
+	border-left: 1px solid var(--borderColor);
+	display: block;
+	padding-left: 2rem;
+}
+
+v-timeline > * {
+	position: relative;
+
+	&::before {
+		--size: 1rem;
+		content: "";
+		position: absolute;
+		left: calc(var(--size) * -2.5);
+		top: 50%;
+		transform: translateY(calc(var(--size) * -0.5));
+		width: var(--size);
+		height: var(--size);
+		background: var(--pico-primary-background);
+		border: 1px solid var(--pico-primary);
+		border-radius: 50%;
+	}
+}

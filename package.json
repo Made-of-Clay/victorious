@@ -7,7 +7,8 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"format": "biome format",
-		"lint": "biome check --max-warnings=0"
+		"lint": "biome check --max-warnings=0",
+		"pico": "cp node_modules/@picocss/pico/css/pico.violet.min.css ."
 	},
 	"dependencies": {
 		"@picocss/pico": "^2.1.1",

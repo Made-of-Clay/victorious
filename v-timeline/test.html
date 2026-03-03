@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test v-timeline</title>
+    <link rel="stylesheet" href="../pico.violet.min.css">
+    <link rel="stylesheet" href="v-timeline.css">
+    <script type="module" src="v-timeline.js"></script>
+    <style>
+        body {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        win-icon::after {
+            content: " 🏆";
+        }
+    </style>
+</head>
+<body>
+    <h1>v-timeline Playground</h1>
+
+    <v-timeline id="main-timeline">
+        <template>
+            <article>
+                <h2>
+                    <span></span> — <b></b>
+                </h2>
+                <time></time>
+                <ul class="players">
+                    <!-- populated dynamically -->
+                </ul>
+                <div class="notes"></div>
+                <div class="actions" style="margin-top: 0.5rem;">
+                    <button type="button">Edit</button>
+                    <button type="button">Delete</button>
+                </div>
+            </article>
+        </template>
+    </v-timeline>
+
+    <script type="module">
+        const data = [
+            {
+                date: '2024-03-01',
+                game: 'Catan',
+                player: 'Alice',
+                note: 'Won by longest road and largest army.',
+                victorious: true
+            },
+            {
+                date: '2024-03-02',
+                game: '7 Wonders',
+                player: ['Bob', 'Charlie'],
+                note: 'Bob won via science, Charlie was runner-up but listed for testing.',
+                victorious: true
+            },
+            {
+                date: '2024-03-02',
+                game: 'Splendor',
+                player: 'Dave',
+                victorious: true
+            },
+            {
+                date: '2024-03-03',
+                game: 'Terraforming Mars',
+                player: ['Alice', 'Bob', 'Charlie'],
+                note: 'A long 3-hour game.',
+                victorious: false
+            }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const timeline = document.getElementById('main-timeline');
+            if (typeof timeline?.load === 'function') {
+                timeline.load(data);
+            } else {
+                // If the component isn't defined yet, wait a bit or use customElements.whenDefined
+                customElements.whenDefined('v-timeline').then(() => {
+                    timeline.load(data);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
