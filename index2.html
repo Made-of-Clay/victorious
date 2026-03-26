@@ -1,15 +1,57 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/images/crown.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="pico.violet.min.css">
+    <link rel="stylesheet" href="./main.css">
+
     <title>victorious</title>
   </head>
   <body>
-    <header>
-      
+    <input type="radio" name="appView" id="appView__history" value="history">
+    <input type="radio" name="appView" id="appView__stats" value="stats">
+
+    <img id="bgCrown" src="/images/crown.svg" alt="" aria-hidden="true">
+    
+    <header id="appHeader">
+      <nav>
+        <ul>
+          <li class="appNavItem"><label for="appView__history">History</label></li>
+          <li class="appNavItem"><label for="appView__stats">Stats</label></li>
+        </ul>
+      </nav>
     </header>
+
+    <main>
+      <button class="primary">Primary Button</button>
+      <section>
+        <label>
+          <span>Search</span>
+          <input type="text" name="search">
+        </label>
+        <label>
+          <span>Show</span>
+          <select id="showFilter">
+            <option value="top20">Newest 20</option>
+          </select>
+        </label>
+      </section>
+
+      <article>
+        <section id="historyContent">
+          <h1>History of Victory</h1>
+          timeline
+        </section>
+
+        <section id="statsContent">
+          <h1>Statistics</h1>
+          <p>Here are your stats!</p>
+        </section>
+      </article>
+    </main>
+    
     <script type="module" src="/main.js"></script>
   </body>
 </html>

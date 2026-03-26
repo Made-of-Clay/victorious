@@ -1,0 +1,54 @@
+:root {
+	--p1: 0.125rem;
+}
+#appHeader {
+	/* fallback to red so its obvious */
+	background-color: var(--pico-primary-background, red);
+	box-shadow: 0 0.25rem 0.5rem #00000050;
+	color: var(--pico-primary-inverse);
+	padding: 0;
+
+	ul,
+	label {
+		color: inherit;
+	}
+	ul,
+	label {
+		margin: 0;
+		padding: 0;
+	}
+	ul {
+		gap: 1rem;
+		justify-content: center;
+		width: 100%;
+	}
+}
+.appNavItem {
+	border-bottom: var(--p1) solid var(--pico-primary-inverse);
+	padding: 0.75rem;
+	transition: background-color 0.3s ease;
+
+	&:hover {
+		background-color: var(--pico-primary-hover-background);
+	}
+}
+
+section[id$="Content"] {
+	display: none;
+}
+input[name="appView"] {
+	display: none;
+}
+#appView__history:checked ~ main #historyContent,
+#appView__stats:checked ~ main #statsContent {
+	display: block;
+}
+
+#bgCrown {
+	filter: grayscale(1);
+	opacity: 0.2;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: -1;
+}
