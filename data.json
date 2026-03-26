@@ -1,0 +1,29 @@
+[
+	{
+		"date": "2024-03-01",
+		"game": "Catan",
+		"player": "Alice",
+		"note": "Won by longest road and largest army.",
+		"victorious": true
+	},
+	{
+		"date": "2024-03-02",
+		"game": "7 Wonders",
+		"player": ["Bob", "Charlie"],
+		"note": "Bob won via science, Charlie was runner-up but listed for testing.",
+		"victorious": true
+	},
+	{
+		"date": "2024-03-02",
+		"game": "Splendor",
+		"player": "Dave",
+		"victorious": true
+	},
+	{
+		"date": "2024-03-03",
+		"game": "Terraforming Mars",
+		"player": ["Alice", "Bob", "Charlie"],
+		"note": "A long 3-hour game.",
+		"victorious": false
+	}
+]
