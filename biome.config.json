@@ -2,7 +2,7 @@
 	"root": true,
 	"extends": ["biome:recommended"],
 	"files": {
-		"ignore": ["node_modules", "dist", "build", "public", "Victorious"]
+		"ignore": ["node_modules", "dist", "build", "public", "src"]
 	},
 	"formatter": {
 		"indentStyle": "space",
@@ -24,8 +24,14 @@
 		}
 	},
 	"html": {
+		"parser": {
+			"selfClosingTags": true
+		},
 		"formatter": {
-			"enabled": true
+			"enabled": true,
+			"indentStyle": "space",
+			"indentSize": 4,
+			"lineWidth": 140
 		}
 	}
 }
